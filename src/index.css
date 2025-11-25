@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+/* UNIVERSAL BUTTON GRADIENT HOVER ANIMATION */
+.magic-btn {
+  position: relative;
+  overflow: hidden;
+  transition: color 0.25s ease-in-out, background 0.25s ease-in-out;
+}
+
+.magic-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(255,255,255,0.15), rgba(255,255,255,0));
+  transition: all 0.35s ease;
+}
+
+.magic-btn:hover::before {
+  left: 100%;
+}
+
+.magic-btn:hover {
+  filter: brightness(1.15);
+}
+
+.magic-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+
+
+
+/* CLEAN INPUT + SELECT DESIGN */
+.clean-input, .clean-select {
+  border: 1px solid #d1d5db;     /* gray-300 */
+  background: #ffffff;
+  color: #111827;                /* gray-900 */
+  padding: 8px 12px;
+  border-radius: 8px;
+  outline: none;
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dark .clean-input,
+.dark .clean-select {
+  background: #374151;           /* gray-700 */
+  border: 1px solid #4b5563;     /* gray-600 */
+  color: #e5e7eb;                /* gray-200 */
+}
+
+.clean-input:focus,
+.clean-select:focus {
+  border-color: #6b7280;         /* gray-500 */
+  box-shadow: 0 0 0 2px rgba(156, 163, 175, 0.25); /* soft gray glow */
+}
+
+/* Remove ugly blue highlight on select */
+.clean-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
