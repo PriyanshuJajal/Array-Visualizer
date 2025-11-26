@@ -718,6 +718,19 @@ const ArrayVisualizer = () => {
 
   const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
+  const startOperation = (opName) => {
+    abortRef.current = false;      // allow new animations
+    setCurrOperation(opName);
+    setIsAnimating(true);
+  };
+
+  const stopOperation = () => {
+    setIsAnimating(false);
+    setHighlightedIndices([]);
+    setComparedIndices([]);
+  };
+
+
   const generateRandomArr = () => {
     const newArr = Array.from({length: arrSize}, () => Math.floor(Math.random() * 100) + 1);
     setArr(newArr);
@@ -736,24 +749,25 @@ const ArrayVisualizer = () => {
 
   const resetVisualization = () => {
     abortRef.current = true;
-    setHighlightedIndices([]);
-    setComparedIndices([]);
-    setIsAnimating(false);
-    setCurrOperation('none');
+
+    stopOperation(true);
   };
 
   const traverseArr = async () => {
-    setCurrOperation('traversal');
-    setIsAnimating(true);
+    startOperation('traversal');
 
     for (let i = 0; i < arr.length; i++) {
-      if (abortRef.current) { setIsAnimating(false); return; }
+      if (abortRef.current) {
+        // ensure UI is fully reset and hide algorithm info
+        stopOperation(true);
+        return;
+      }
 
       setHighlightedIndices([i]);
       await sleep(animationSpeed);
     }
-    setIsAnimating(false);
-    setHighlightedIndices([]);
+
+    stopOperation(false);
   };
 
   const insertElement = async () => {
@@ -761,8 +775,8 @@ const ArrayVisualizer = () => {
     const idx = parseInt(inputIdx);
     if (isNaN(val)) return;
 
-    setIsAnimating(true);
-    setCurrOperation('insertion');
+    startOperation('insertion');
+
     const newArr = [...arr];
     
     if (isNaN(idx) || idx >= newArr.length) {
@@ -775,8 +789,8 @@ const ArrayVisualizer = () => {
 
     setArr(newArr);
     await sleep(animationSpeed);
-    setHighlightedIndices([]);
-    setIsAnimating(false);
+
+    stopOperation();
     setInputIdx('');
     setInputVal('');
   };
@@ -785,15 +799,15 @@ const ArrayVisualizer = () => {
     const idx = parseInt(inputIdx);
     if (isNaN(idx) || idx < 0 || idx >= arr.length) return;
 
-    setIsAnimating(true);
-    setCurrOperation('deletion');
+    startOperation('deletion');
+
     setHighlightedIndices([idx]);
     await sleep(animationSpeed);
 
     const newArr = arr.filter((_, i) => i !== idx);
     setArr(newArr);
-    setHighlightedIndices([]);
-    setIsAnimating(false);
+
+    stopOperation();
     setInputIdx('');
     setInputVal('');
   };
@@ -803,16 +817,16 @@ const ArrayVisualizer = () => {
     const idx = parseInt(inputIdx);
     if (isNaN(val) || isNaN(idx) || idx < 0 || idx >= arr.length) return;
 
-    setIsAnimating(true);
-    setCurrOperation('update');
+    startOperation('update');
+
     setHighlightedIndices([idx]);
     await sleep(animationSpeed);
 
     const newArr = [...arr];
     newArr[idx] = val;
     setArr(newArr);
-    setHighlightedIndices([]);
-    setIsAnimating(false);
+
+    stopOperation();
     setInputVal('');
     setInputIdx('');
   };
@@ -821,11 +835,14 @@ const ArrayVisualizer = () => {
     const target = parseInt(searchVal);
     if (isNaN(target)) return;
 
-    setIsAnimating(true);
-    setCurrOperation('linearSearch');
+    startOperation('linearSearch');
 
     for (let i = 0; i < arr.length; i++) {
-      if (abortRef.current) { setIsAnimating(false); return; }
+      if (abortRef.current) {
+        // ensure UI is fully reset and hide algorithm info
+        stopOperation(true);
+        return;
+      }
 
       setHighlightedIndices([i]);
       await sleep(animationSpeed);
@@ -833,15 +850,14 @@ const ArrayVisualizer = () => {
       if (arr[i] === target) {
         setComparedIndices([i]);
         await sleep(animationSpeed * 2);
-        setHighlightedIndices([]);
-        setIsAnimating(false);
+
+        stopOperation();
         setSearchVal('');
         return;
       }
     }
     
-    setHighlightedIndices([]);
-    setIsAnimating(false);
+    stopOperation();
     setSearchVal('');
     alert('Element Not Found!');
   };
@@ -850,8 +866,7 @@ const ArrayVisualizer = () => {
     const target = parseInt(searchVal);
     if (isNaN(target)) return;
 
-    setIsAnimating(true);
-    setCurrOperation('binarySearch');
+    startOperation('binarySearch');
 
     const sortedArr = [...arr].sort((a, b) => a - b);
     await sleep(animationSpeed);
@@ -862,7 +877,11 @@ const ArrayVisualizer = () => {
     let r = sortedArr.length - 1;
 
     while (l <= r) {
-      if (abortRef.current) { setIsAnimating(false); return; }
+      if (abortRef.current) {
+        // ensure UI is fully reset and hide algorithm info
+        stopOperation(true);
+        return;
+      }
 
       const mid = Math.floor(l + (r - l) / 2);
       setHighlightedIndices([l, mid, r]);
@@ -871,8 +890,8 @@ const ArrayVisualizer = () => {
       if (sortedArr[mid] === target) {
         setComparedIndices([mid]);
         await sleep(animationSpeed * 2);
-        setHighlightedIndices([]);
-        setIsAnimating(false);
+
+        stopOperation();
         setSearchVal('');
         return;
       }
@@ -881,24 +900,30 @@ const ArrayVisualizer = () => {
       else r = mid - 1;
     }
     
-    setHighlightedIndices([]);
-    setIsAnimating(false);
+    stopOperation();
     setSearchVal('');
     alert('Element not found!');
   };
 
   const bubbleSort = async () => {
-    setIsAnimating(true);
-    setCurrOperation('bubbleSort');
+    startOperation('bubbleSort');
     const newArr = [...arr];
 
     for (let i = 0; i < newArr.length; i++) {
-      if (abortRef.current) { setIsAnimating(false); return; }
+      if (abortRef.current) {
+        // ensure UI is fully reset and hide algorithm info
+        stopOperation(true);
+        return;
+      }
 
       let swapped = false;
 
       for (let j = 0; j < newArr.length - i - 1; j++) {
-        if (abortRef.current) { setIsAnimating(false); return; }
+        if (abortRef.current) {
+          // ensure UI is fully reset and hide algorithm info
+          stopOperation(true);
+          return;
+        }
 
         setComparedIndices([j, j + 1]);
         await sleep(animationSpeed);
@@ -915,18 +940,19 @@ const ArrayVisualizer = () => {
       if (!swapped) break;
     }
 
-    setComparedIndices([]);
-    setHighlightedIndices([]);
-    setIsAnimating(false);
+    stopOperation();
   };
 
   const insertionSort = async () => {
-    setIsAnimating(true);
-    setCurrOperation('insertionSort');
+    startOperation('insertionSort');
     const newArr = [...arr];
 
     for (let i = 1; i < newArr.length; i++) {
-      if (abortRef.current) { setIsAnimating(false); return; }
+      if (abortRef.current) {
+        // ensure UI is fully reset and hide algorithm info
+        stopOperation(true);
+        return;
+      }
 
       let key = newArr[i];
       let j = i - 1;
@@ -935,7 +961,11 @@ const ArrayVisualizer = () => {
       await sleep(animationSpeed);
 
       while (j >= 0 && newArr[j] > key) {
-        if (abortRef.current) { setIsAnimating(false); return; }
+        if (abortRef.current) {
+          // ensure UI is fully reset and hide algorithm info
+          stopOperation(true);
+          return;
+        }
 
         setComparedIndices([j, j + 1]);
         newArr[j + 1] = newArr[j];
@@ -949,27 +979,33 @@ const ArrayVisualizer = () => {
       await sleep(animationSpeed);
     }
 
-    setHighlightedIndices([]);
-    setComparedIndices([]);
-    setIsAnimating(false);
+    stopOperation();
   };
 
   const selectionSort = async () => {
-    setIsAnimating(true);
-    setCurrOperation('selectionSort');
+    startOperation('selectionSort');
     const newArr = [...arr];
 
     for (let i = 0; i < newArr.length - 1; i++) {
-      if (abortRef.current) { setIsAnimating(false); return; }
+      if (abortRef.current) {
+        // ensure UI is fully reset and hide algorithm info
+        stopOperation(true);
+        return;
+      }
 
       let minIdx = i;
       setHighlightedIndices([i]);
       
       for (let j = i + 1; j < newArr.length; j++) {
-        if (abortRef.current) { setIsAnimating(false); return; }
+        if (abortRef.current) {
+          // ensure UI is fully reset and hide algorithm info
+          stopOperation(true);
+          return;
+        }
         
         setComparedIndices([minIdx, j]);
         await sleep(animationSpeed);
+
         if (newArr[j] < newArr[minIdx]) minIdx = j;
       }
       
@@ -980,9 +1016,7 @@ const ArrayVisualizer = () => {
       }
     }
     
-    setHighlightedIndices([]);
-    setComparedIndices([]);
-    setIsAnimating(false);
+    stopOperation();
   };
 
   return (
