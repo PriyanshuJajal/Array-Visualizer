@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Moon, Sun, MessageSquare, X, Send } from 'lucide-react';
 
+
 // ============== CONSTANTS ==============
 const ALGORITHMS = {
   traversal: {
@@ -147,8 +148,8 @@ const ALGORITHMS = {
   }
 };
 
+
 // ============== GOOGLE FORM CONFIG ==============
-// REPLACE THESE VALUES WITH YOUR OWN FROM GOOGLE FORMS!
 const GOOGLE_FORM_CONFIG = {
   formId: import.meta.env.VITE_FORM_ID, 
   entries: {
@@ -159,6 +160,7 @@ const GOOGLE_FORM_CONFIG = {
     rating: import.meta.env.VITE_ENTRY_RATING  
   }
 };
+
 
 
 // ============== FEEDBACK MODAL COMPONENT ==============
@@ -184,7 +186,6 @@ const FeedbackModal = ({ isOpen, onClose, theme }) => {
     setIsSubmitting(true);
     
     try {
-      // Create form data for Google Forms
       const formBody = new URLSearchParams();
       formBody.append(GOOGLE_FORM_CONFIG.entries.name, formData.name);
       formBody.append(GOOGLE_FORM_CONFIG.entries.email, formData.email);
@@ -192,7 +193,6 @@ const FeedbackModal = ({ isOpen, onClose, theme }) => {
       formBody.append(GOOGLE_FORM_CONFIG.entries.message, formData.message);
       formBody.append(GOOGLE_FORM_CONFIG.entries.rating, formData.rating);
 
-      // Submit to Google Forms
       // eslint-disable-next-line no-unused-vars
       const response = await fetch(
         `https://docs.google.com/forms/d/e/${GOOGLE_FORM_CONFIG.formId}/formResponse`,
@@ -206,7 +206,6 @@ const FeedbackModal = ({ isOpen, onClose, theme }) => {
         }
       );
 
-      // no-cors mode doesn't allow reading response, so we assume success
       setSubmitStatus('success');
       setTimeout(() => {
         onClose();
@@ -393,6 +392,7 @@ const FeedbackModal = ({ isOpen, onClose, theme }) => {
   );
 };
 
+
 // ============== HEADER COMPONENT ==============
 const Header = ({ theme, toggleTheme, onFeedbackClick }) => {
   const headerTxtClass = theme === 'dark' ? 'text-gray-200' : 'text-gray-900';
@@ -401,7 +401,6 @@ const Header = ({ theme, toggleTheme, onFeedbackClick }) => {
   return (
     <div className="mb-6">
       <div className="relative">
-        {/* Buttons on the right for medium+ screens, centered for mobile */}
         <div className="flex gap-2 justify-center md:justify-end md:absolute md:top-0 md:right-0 mb-4 md:mb-0">
           <button
             onClick={onFeedbackClick}
@@ -427,7 +426,6 @@ const Header = ({ theme, toggleTheme, onFeedbackClick }) => {
           </button>
         </div>
         
-        {/* Heading and paragraph always centered */}
         <div className="flex flex-col items-center text-center">
           <h1 className={`text-2xl sm:text-3xl font-semibold mb-2 ${headerTxtClass}`}>
             Array Visualizer
@@ -440,6 +438,7 @@ const Header = ({ theme, toggleTheme, onFeedbackClick }) => {
     </div>
   );
 };
+
 
 // ============== CONTROLS COMPONENT ==============
 const Controls = ({ 
@@ -541,6 +540,7 @@ const Controls = ({
   );
 };
 
+
 // ============== ARRAY DISPLAY COMPONENT ==============
 const ArrayDisplay = ({ theme, visualMode, arr, highlightedIndices, comparedIndices }) => {
   if (visualMode === 'squares') {
@@ -573,7 +573,6 @@ const ArrayDisplay = ({ theme, visualMode, arr, highlightedIndices, comparedIndi
 
   return (
     <div className="w-full h-full overflow-x-auto">
-      {/* On large screens this wrapper becomes flex + centers the whole bar row */}
       <div className="lg:flex lg:justify-center">
         <div className="flex items-end gap-1 sm:gap-2 h-56 sm:h-64 px-2 min-w-max justify-start">
           {arr.map((val, idx) => {
@@ -621,6 +620,8 @@ const ArrayDisplay = ({ theme, visualMode, arr, highlightedIndices, comparedIndi
   );
 };
 
+
+
 // ============== OPERATION SECTION COMPONENT ==============
 const OperationSection = ({ theme, title, isExpanded, onToggle, children }) => {
   const headerTxtClass = theme === 'dark' ? 'text-gray-200' : 'text-gray-900';
@@ -638,6 +639,8 @@ const OperationSection = ({ theme, title, isExpanded, onToggle, children }) => {
     </div>
   );
 };
+
+
 
 // ============== ALGORITHM INFO COMPONENT ==============
 const AlgorithmInfo = ({ theme, algorithm, showCode, showInfo, onToggleCode, onToggleInfo }) => {
@@ -696,6 +699,8 @@ const AlgorithmInfo = ({ theme, algorithm, showCode, showInfo, onToggleCode, onT
   );
 };
 
+
+
 // ============== MAIN COMPONENT ==============
 const ArrayVisualizer = () => {
   const [arr, setArr] = useState([10, 25, 4, 19, 7, 3, 21, 18]);
@@ -719,7 +724,7 @@ const ArrayVisualizer = () => {
   const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
   const startOperation = (opName) => {
-    abortRef.current = false;      // allow new animations
+    abortRef.current = false;      
     setCurrOperation(opName);
     setIsAnimating(true);
   };
@@ -758,7 +763,6 @@ const ArrayVisualizer = () => {
 
     for (let i = 0; i < arr.length; i++) {
       if (abortRef.current) {
-        // ensure UI is fully reset and hide algorithm info
         stopOperation(true);
         return;
       }
@@ -839,7 +843,6 @@ const ArrayVisualizer = () => {
 
     for (let i = 0; i < arr.length; i++) {
       if (abortRef.current) {
-        // ensure UI is fully reset and hide algorithm info
         stopOperation(true);
         return;
       }
@@ -878,7 +881,6 @@ const ArrayVisualizer = () => {
 
     while (l <= r) {
       if (abortRef.current) {
-        // ensure UI is fully reset and hide algorithm info
         stopOperation(true);
         return;
       }
@@ -911,7 +913,6 @@ const ArrayVisualizer = () => {
 
     for (let i = 0; i < newArr.length; i++) {
       if (abortRef.current) {
-        // ensure UI is fully reset and hide algorithm info
         stopOperation(true);
         return;
       }
@@ -920,7 +921,6 @@ const ArrayVisualizer = () => {
 
       for (let j = 0; j < newArr.length - i - 1; j++) {
         if (abortRef.current) {
-          // ensure UI is fully reset and hide algorithm info
           stopOperation(true);
           return;
         }
@@ -949,7 +949,6 @@ const ArrayVisualizer = () => {
 
     for (let i = 1; i < newArr.length; i++) {
       if (abortRef.current) {
-        // ensure UI is fully reset and hide algorithm info
         stopOperation(true);
         return;
       }
@@ -962,7 +961,6 @@ const ArrayVisualizer = () => {
 
       while (j >= 0 && newArr[j] > key) {
         if (abortRef.current) {
-          // ensure UI is fully reset and hide algorithm info
           stopOperation(true);
           return;
         }
@@ -988,7 +986,6 @@ const ArrayVisualizer = () => {
 
     for (let i = 0; i < newArr.length - 1; i++) {
       if (abortRef.current) {
-        // ensure UI is fully reset and hide algorithm info
         stopOperation(true);
         return;
       }
@@ -998,7 +995,6 @@ const ArrayVisualizer = () => {
       
       for (let j = i + 1; j < newArr.length; j++) {
         if (abortRef.current) {
-          // ensure UI is fully reset and hide algorithm info
           stopOperation(true);
           return;
         }
