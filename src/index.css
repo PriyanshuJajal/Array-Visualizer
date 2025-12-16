@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+@import url('https://fonts.googleapis.com/css2?family=Geom:ital,wght@0,300..900;1,300..900&family=Miniver&family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+
+:root {
+  font-family: "Geom" , sans-serif;
+}
+
 /* UNIVERSAL BUTTON GRADIENT HOVER ANIMATION */
 .magic-btn {
   position: relative;
